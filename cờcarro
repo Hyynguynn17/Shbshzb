@@ -1,0 +1,224 @@
+import random
+map_cre= [["_","_","_","_","_","_","_","_","_","_","_","_","_","_","_"],
+          ["_","_","_","_","_","_","_","_","_","_","_","_","_","_","_"],
+          ["_","_","_","_","_","_","_","_","_","_","_","_","_","_","_"],
+          ["_","_","_","_","_","_","_","_","_","_","_","_","_","_","_"],
+          ["_","_","_","_","_","_","_","_","_","_","_","_","_","_","_"],
+          ["_","_","_","_","_","_","_","_","_","_","_","_","_","_","_"],
+          ["_","_","_","_","_","_","_","_","_","_","_","_","_","_","_"],
+          ["_","_","_","_","_","_","_","_","_","_","_","_","_","_","_"],
+          ["_","_","_","_","_","_","_","_","_","_","_","_","_","_","_"],
+          ["_","_","_","_","_","_","_","_","_","_","_","_","_","_","_"],
+          ["_","_","_","_","_","_","_","_","_","_","_","_","_","_","_"],
+          ["_","_","_","_","_","_","_","_","_","_","_","_","_","_","_"],
+          ["_","_","_","_","_","_","_","_","_","_","_","_","_","_","_"],
+          ["_","_","_","_","_","_","_","_","_","_","_","_","_","_","_"],
+          ["_","_","_","_","_","_","_","_","_","_","_","_","_","_","_"]]
+
+
+def check_pos_choice(x,y):
+    if (x >15 or y >15 or x<=0 or y <=0):
+        return True
+    else:
+        if (map_cre[x-1][y-1] == "_"):
+            return False
+        else:
+            return True
+
+
+def player_choose():
+    global flag
+    global num
+    global x_collect
+    global y_collect
+    if flag:
+        if (num%2 == 0):
+            x,y = map(int,input("mời người chơi thứ hai nhập tọa độ x,y: ").split())
+        
+        else:
+            x,y = map(int,input("mời người chơi thứ nhất nhập tọa độ x,y: ").split())
+        while check_pos_choice(x,y):
+                print("vị trí không hợp lệ , vui lòng nhập lại")
+                if (num%2 == 0):
+                    x,y = map(int,input("mời người chơi thứ hai nhập tọa độ x,y: ").split())
+        
+                else:
+                    x,y = map(int,input("mời người chơi thứ nhất nhập tọa độ x,y: ").split())
+        if (num%2 ==0):
+            map_cre[x-1][y-1] = "X"
+            x_collect.append(str(x-1) + " " +str(y-1))
+            num+=1
+            for i in x_collect:
+                a,b = map(int,i.split())
+                if (check_pos(a,b,"X") == "win"):
+                    sys_draw_map()
+                    print("người chơi thứ nhất đã thắng")
+                    end_game()
+                    flag = False
+        else:
+            map_cre[x-1][y-1] = "O"
+            y_collect.append(str(x-1) + " " + str(y-1))
+            num +=1
+            for i in y_collect:
+                a,b = map(int,i.split())
+                if (check_pos(a,b,"O") == "win"):
+                    sys_draw_map()
+                    print("người chơi thứ hai đã thắng")
+                    end_game()
+                    flag = False
+    if flag:
+        sys_draw_map()
+        
+           
+def check_vertical_1(x,y,pl_char):#doc
+
+    if map_cre[x][y] == pl_char:
+        if x > 0 and x <14 :
+            return 1 + check_vertical_1(x+1,y,pl_char)
+        return 1
+    return 0
+        
+def check_vertical_2(x,y,pl_char):
+
+    if map_cre[x][y] == pl_char:
+        if x > 0 and x <14 :
+            
+            return 1 + check_vertical_2(x-1,y,pl_char)
+        return 1
+    return 0
+
+def check_total_vertical(x,y,pl_char):
+    if x > 0  and x <14:
+        return 1+ check_vertical_1(x+1,y,pl_char) +check_vertical_2(x-1,y,pl_char)
+
+    
+    
+
+def check_horizontal_1(x,y,pl_char):#ngang
+    if map_cre[x][y] == pl_char:
+        if y > 0  and y< 14:
+            return 1 + check_horizontal_1(x,y+1,pl_char)
+        return 1
+    
+    return 0
+        
+def check_horizontal_2(x,y,pl_char):
+
+    if map_cre[x][y] == pl_char:
+        if y > 0  and y< 14:
+            return 1 + check_horizontal_2(x,y-1,pl_char)
+        return 1
+    
+    return 0
+
+def check_total_horizontal(x,y,pl_char):
+    if y > 0 and y< 14:
+        return 1 + check_horizontal_1(x,y+1,pl_char) +check_horizontal_2(x,y-1,pl_char)
+
+    
+def check_diagonal_2_1(x,y,pl_char):#cheo2
+    
+    if map_cre[x][y] == pl_char:
+        if x > 0 and y > 0 and x <14 and y< 14:
+            return 1 + check_diagonal_2_1(x-1,y+1,pl_char)
+        return 1
+    return 0
+        
+def check_diagonal_2_2(x,y,pl_char):
+
+    if map_cre[x][y] == pl_char:
+        if x > 0 and y > 0 and x <14 and y< 14:
+            return 1 + check_diagonal_2_2(x+1,y-1,pl_char)
+        return 1
+    return 0
+
+def check_total_diagonal_2(x,y,pl_char):
+    if x > 0 and y > 0 and x <14 and y< 14:
+        return 1 + check_diagonal_2_1(x+1,y-1,pl_char) + check_diagonal_2_2(x+1,y-1,pl_char)
+
+           
+def check_diagonal_1_1(x,y,pl_char):#cheo 1
+
+    if map_cre[x][y] == pl_char:
+        if x > 0 and y > 0 and x <14 and y< 14:
+            return 1 + check_diagonal_1_1(x+1,y+1,pl_char)
+        return 1
+    return 0
+        
+def check_diagonal_1_2(x,y,pl_char):
+
+    if map_cre[x][y] == pl_char:
+        if x > 0 and y > 0 and x <14 and y< 14:
+            return 1 + check_diagonal_1_2(x-1,y-1,pl_char)
+        return 1
+    return 0
+def check_total_diagonal_1(x,y,pl_char):
+    if x > 0 and y > 0 and x <14 and y< 14:
+        return 1+ check_diagonal_1_1(x+1,y+1,pl_char) +check_diagonal_1_2(x-1,y-1,pl_char)
+
+    
+
+def check_pos(x,y,pl_char):#đi chéo,dọc và ngang
+    global map_cre
+    if (check_total_diagonal_1(x,y,pl_char) == 5):
+        return "win"
+    
+    elif (check_total_diagonal_2(x,y,pl_char) == 5):
+        return "win"
+    
+    elif (check_total_horizontal(x,y,pl_char) == 5):
+        return "win"
+    
+    elif (check_total_vertical(x,y,pl_char) == 5):
+        return "win"
+    else:
+        pass
+
+
+def end_game():
+    choice = int(input("bạn có muốn chơi lại không?(ấn 1 là có ấn 2 là không): "))
+    if choice == "1":
+        sys_run()
+    else:
+        print("credit: hyynguynn17")
+
+
+def sys_draw_map():          
+    d2 = 0
+    
+    for i in range(100):
+        print()
+    
+    print("  ",end = " ")
+    print("  1 2 3 4 5 6 7 8 9 0 1 2 3 4 5")
+    for i in range(15):
+        print(" ",end = " ")
+        for j in range(16):
+                if (j==0):
+                    if (i <=8):
+                        print("",d2+1,end = " ")
+                        d2+=1
+                    else:
+                        print(d2+1,end = " ")
+                        d2+=1
+                else:
+                    print(map_cre[j-1][i],end = " ")
+
+        print()
+        
+
+    player_choose()
+
+
+def sys_run():
+    global x_collect 
+    global y_collect 
+    global flag 
+    flag = True
+    x_collect = []
+    y_collect  = []
+    global num
+    num = random.randint(1,2)
+    sys_draw_map()
+    
+sys_run()
